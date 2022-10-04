@@ -31,7 +31,7 @@ def f(x):
     return arro
 y = np.zeros(1)
 x = np.linspace(1,10,5)
-for i in x:
-        y = np.append(y,f(i))
-y = y[1:]
-print(y)
+arr_y = 100*np.random.random(60)
+arr_x = np.linspace(0,100,60)
+arr = np.c_[arr_x,arr_y]
+print(arr)

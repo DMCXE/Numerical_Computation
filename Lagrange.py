@@ -20,7 +20,7 @@ class Lagrange:
         nom = self.donodo(x)
         return np.sum(self.arr1_y*nom/self.denom)
 
-    def visualize(self,start,end,step):
+    def visualize(self,start,end,step,text):
         x = np.linspace(start,end,step)
         y = np.zeros(1)
         for i in x:
@@ -28,8 +28,9 @@ class Lagrange:
         y = y[1:]
         plt.figure()
         plt.scatter(self.arr1_x, self.arr1_y, c='red')
-        for j in range(0,self.lenth):
-            plt.text(self.arr1_x[j],self.arr1_y[j],(self.arr1_x[j],self.arr1_y[j]))
+        if text is True:
+            for j in range(0,self.lenth):
+                plt.text(self.arr1_x[j],self.arr1_y[j],(self.arr1_x[j],self.arr1_y[j]))
         plt.plot(x,y)
         plt.show()
 
