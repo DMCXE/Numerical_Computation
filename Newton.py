@@ -44,11 +44,12 @@ class Newton:
                 plt.text(self.arr1_x[j],self.arr1_y[j],(self.arr1_x[j],self.arr1_y[j]))
         plt.plot(x,y)
         plt.show()
-
+'''
 arr1 = np.array([[1,2],[3,4],[5,6],[7,8],[9,10]])
 arr = np.array([[1960,180671],[1970,205052],[1980,227225],[1990,249623],[2000,282162],[2010,309327],[2020,329484]])
 arr3 = np.array([[0.4,0.41075],[0.55,0.57815],[0.65,0.69675],[0.80,0.88811],[0.90,1.02652],[1.05,1.25382]])
-a = Newton(arr3)
-#a.visualize(1960,2030,1000,True)
+a = Newton(arr)
+a.visualize(1940,2050,1000,True)
 print(a.num(0.596))
 print(a.f()[1])
+'''
