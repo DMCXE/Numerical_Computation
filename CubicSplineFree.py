@@ -78,8 +78,22 @@ class CubicSplineFree:
         Mn = self.TDMA(a,b,c,d)
         return Mn
 
+    def zone(self,x):
+        for i in range(0,self.lenth-1):
+            if x-self.arr1_x[i]>=0 and x-self.arr1_x[i+1]<=0 :
+                zone = i
+            elif  x<self.arr1_x[0] :
+                zone = 0
+            elif  x>self.arr1_x[self.lenth-1]:
+                zone = self.lenth-1
+        return zone
+
+
+
+
+
 arr = np.array([[1960,180671],[1970,205052],[1980,227225],[1990,249623],[2000,282162],[2010,309327],[2020,329484]])
 
 arr1 = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]])
 a= CubicSplineFree(arr)
-print(a.Mn())
+print(a.zone(10))
