@@ -9,7 +9,7 @@ arr_x = np.linspace(0,100,N)
 arr = np.c_[arr_x,arr_y]
 st = time.time()
 Lag = la(arr)
-#Lag.visualize(0,100,100,text=True)
+Lag.visualize(0,100,100,text=True)
 po1 = Lag.num(19)
 stt = time.time()
 print(stt-st)

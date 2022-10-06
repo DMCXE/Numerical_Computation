@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 class CubicSplineFree:
     def __init__(self,arr1):
         self.arr1 = arr1
@@ -79,21 +80,49 @@ class CubicSplineFree:
         return Mn
 
     def zone(self,x):
+        if x < np.min(self.arr1_x): zone = 0
+        if x > np.max(self.arr1_x): zone = self.lenth-2
         for i in range(0,self.lenth-1):
-            if x-self.arr1_x[i]>=0 and x-self.arr1_x[i+1]<=0 :
+            if x-self.arr1_x[i]>=0 and x-self.arr1_x[i+1]<=0:
                 zone = i
-            elif  x<self.arr1_x[0] :
-                zone = 0
-            elif  x>self.arr1_x[self.lenth-1]:
-                zone = self.lenth-1
         return zone
 
+    def num(self,x):
+        j = self.zone(x)
+        M = self.Mn()
+        h = self.hn()
+        S = M[j]*(self.arr1_x[j+1]-x)**3/(6*h[j]) \
+            + M[j+1]*(x-self.arr1_x[j])**3/(6*h[j]) \
+            + (self.arr1_y[j]-M[j]*h[j]**2/6)*(self.arr1_x[j+1]-x)/h[j] \
+            + (self.arr1_y[j+1]-M[j+1]*h[j]**2/6)*(x-self.arr1_x[j])/h[j]
+        return S
+
+    def visualize(self,start,end,step,text):
+        x = np.linspace(start,end,step)
+        y = np.zeros(1)
+        for i in x:
+            y = np.append(y,self.num(i))
+        y = y[1:]
+        plt.figure()
+        plt.scatter(self.arr1_x, self.arr1_y, c='red')
+        if text is True:
+            for j in range(0,self.lenth):
+                plt.text(self.arr1_x[j],self.arr1_y[j],(self.arr1_x[j],self.arr1_y[j]))
+        plt.plot(x,y)
+        plt.show()
 
 
 
 
-arr = np.array([[1960,180671],[1970,205052],[1980,227225],[1990,249623],[2000,282162],[2010,309327],[2020,329484]])
 
+#arr = np.array([[1960,180671],[1970,205052],[1980,227225],[1990,249623],[2000,282162],[2010,309327],[2020,329484]])
+arr2 = np.array([[27.7,4.1],[28,4.3],[29,4.1],[30,3.]])
 arr1 = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]])
-a= CubicSplineFree(arr)
-print(a.zone(10))
+
+N = 8
+arr_y = 100*np.sin(np.random.random(N))
+arr_x = np.linspace(0,100,N)
+arr = np.c_[arr_x,arr_y]
+a= CubicSplineFree(arr2)
+a.visualize(27,30,1000,False)
+print(a.num(1970))
