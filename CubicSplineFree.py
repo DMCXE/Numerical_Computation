@@ -34,7 +34,7 @@ class CubicSplineFree:
     def dn(self):
         dn = np.zeros(1)
         hn = self.hn()
-        for i in range(1,len(hn)-1):
+        for i in range(1,len(hn)):
             dn = np.append(dn,6*self.fm(i)/(hn[i-1]+hn[i]))
         return dn
 
@@ -50,8 +50,8 @@ class CubicSplineFree:
                 if i < n - 1:
                     A[i, i + 1] = c[i]
             # new list of modified coefficients
-            c_1 = [0] * n
-            d_1 = [0] * n
+            c_1 = np.array([0] * n)
+            d_1 = np.array([0] * n)
             for i in range(n):
                 if not i:
                     c_1[i] = c[i] / b[i]
@@ -60,13 +60,13 @@ class CubicSplineFree:
                     c_1[i] = c[i] / (b[i] - c_1[i - 1] * a[i])
                     d_1[i] = (d[i] - d_1[i - 1] * a[i]) / (b[i] - c_1[i - 1] * a[i])
             # x: solution of Ax=d
-            x = [0] * n
+            x = np.array([0] * n)
             for i in range(n - 1, -1, -1):
                 if i == n - 1:
                     x[i] = d_1[i]
                 else:
                     x[i] = d_1[i] - c_1[i] * x[i + 1]
-            x = [round(_, 4) for _ in x]
+            #x = np.array([round(_, 4) for _ in x])
             return x
         except Exception as e:
             return e
@@ -75,7 +75,7 @@ class CubicSplineFree:
         a = np.append(self.mu(),0)
         c = np.append(self.lam(),0)
         b = 2*np.ones(self.lenth)
-        d = np.append(np.append(np.zeros(1),self.dn()),0)
+        d = np.append(self.dn(),0)
         Mn = self.TDMA(a,b,c,d)
         return Mn
 
@@ -91,9 +91,9 @@ class CubicSplineFree:
         j = self.zone(x)
         M = self.Mn()
         h = self.hn()
-        S = M[j]*(self.arr1_x[j+1]-x)**3/(6*h[j]) \
-            + M[j+1]*(x-self.arr1_x[j])**3/(6*h[j]) \
-            + (self.arr1_y[j]-M[j]*h[j]**2/6)*(self.arr1_x[j+1]-x)/h[j] \
+        S = M[j]*((self.arr1_x[j+1]-x)**3)/(6*h[j]) \
+            + M[j+1]*((x-self.arr1_x[j])**3)/(6*h[j]) \
+            + (self.arr1_y[j]-(M[j]*(h[j]**2))/6)*(self.arr1_x[j+1]-x)/h[j] \
             + (self.arr1_y[j+1]-M[j+1]*h[j]**2/6)*(x-self.arr1_x[j])/h[j]
         return S
 
@@ -116,13 +116,13 @@ class CubicSplineFree:
 
 
 #arr = np.array([[1960,180671],[1970,205052],[1980,227225],[1990,249623],[2000,282162],[2010,309327],[2020,329484]])
-arr2 = np.array([[27.7,4.1],[28,4.3],[29,4.1],[30,3.]])
+arr2 = np.array([[27.7,4.1],[28,4.3],[29.,4.1],[30,3.]])
 arr1 = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]])
 
-N = 8
+N = 11
 arr_y = 100*np.sin(np.random.random(N))
 arr_x = np.linspace(0,100,N)
 arr = np.c_[arr_x,arr_y]
 a= CubicSplineFree(arr2)
-a.visualize(27,30,1000,False)
-print(a.num(1970))
+a.visualize(27,30.5,1000,False)
+print(a.dn())
