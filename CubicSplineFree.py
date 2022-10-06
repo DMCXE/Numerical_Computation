@@ -114,15 +114,16 @@ class CubicSplineFree:
 
 
 
-
-#arr = np.array([[1960,180671],[1970,205052],[1980,227225],[1990,249623],[2000,282162],[2010,309327],[2020,329484]])
+'''
+arr3 = np.array([[1960,180671],[1970,205052],[1980,227225],[1990,249623],[2000,282162],[2010,309327],[2020,329484]])
 arr2 = np.array([[27.7,4.1],[28,4.3],[29.,4.1],[30,3.]])
-arr1 = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]])
+arr1 = np.array([[1, 2], [3.9, 400], [4, -600], [4.1, 2], [9, 100]])
 
-N = 11
-arr_y = 100*np.sin(np.random.random(N))
+N = 8
+arr_y = 100*np.random.random(N)
 arr_x = np.linspace(0,100,N)
 arr = np.c_[arr_x,arr_y]
-a= CubicSplineFree(arr2)
-a.visualize(27,30.5,1000,False)
-print(a.dn())
+a= CubicSplineFree(arr1)
+a.visualize(0,10,10000,False)
+print(a.Mn())
+'''
