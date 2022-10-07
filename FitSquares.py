@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import time
 class FitSquares_polynomial:
     def __init__(self,arr1,n):
         self.arr1 = arr1
@@ -43,16 +43,25 @@ class FitSquares_polynomial:
         plt.plot(x,y)
         plt.show()
 
+    def delta(self):
+        an = self.an
+        de = np.zeros(self.lenth)
+        for i in range(0,self.lenth):
+            de[i] = (self.num(self.arr1_x[i])-self.arr1_y[i])**2
+        return np.min(de)
 
 
 
+'''
 arr1 = np.array([[1,2],[3,4],[5,6],[7,8],[9,10]])
 arr2 = np.array([[1,1.629],[1.25,1.756],[1.5,1.876],[1.75,2.008],[2,2.135]])
-
-a = FitSquares_polynomial(arr1,5)
-a.visualize(0,10,100,False)
+st = time.time()
+a = FitSquares_polynomial(arr2,5)
+#a.visualize(0,10,100,False)
 print(a.phiprod()[0])
 print(a.num(1))
-
-
+print(a.delta())
+stt = time.time()
+print(stt-st)
+'''
         
