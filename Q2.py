@@ -19,3 +19,4 @@ ma = np.max(w_ln)
 S.visualize(mi-0.5,ma+0.5,1000,False)
 an = S.an
 print(an)
+print(S.delta())
