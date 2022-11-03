@@ -1,4 +1,4 @@
-[TOC]
+**！注意，在公式渲染上出现问题，请考虑文件中的pdf文件，这个问题稍后修复（闭馆了因为）**
 
 这次，我们将通过插值、拟合与线性方程组的数学描述导出数值方法，并用其解决研究生课程《数值计算》大作业中的部分问题。本文涉及的全部代码及其用法可前往Github仓库https://github.com/DMCXE/Numerical_Computation 查看。
 
@@ -11,27 +11,27 @@
 - 产生如多普勒展宽效益下，局部插值同样能发生改变，且保持其余区域的稳定性
 - 快速计算，节省计算资源，提高分析效率
 
-我们希望根据给定的函数表做一个既能反应截面函数$f(x)$的特性，又便于计算的简单函数$P(x)$，用$P(x)$近似$f(x)$。而这便同样是插值法的目的。
+我们希望根据给定的函数表做一个既能反应截面函数 $f(x)$ 的特性，又便于计算的简单函数 $P(x)$ ，用 $P(x)$ 近似 $f(x)$ 。而这便同样是插值法的目的。
 
 ## 1.1 插值方法的定义
 
-设函数$y = f(x)$在区间$[a,b]$上有定义，且已知$a \leqslant x_0<x_1<\cdots<x_n \leqslant b$上的值$y_0,y_1,...,y_n$，若存在一简单函数$P(x)$，使：
+设函数 $y = f(x)$ 在区间 $[a,b]$ 上有定义，且已知 $a \leqslant x_0<x_1< \cdots <x_n \leqslant b$ 上的值 $y_0,y_1,...,y_n$ ，若存在一简单函数 $P(x)$ ，使：
 
 $$P(x_i)=y_i, i = 0,1,...,n$$
 
-成立，就称$P(x)$为$f(x)$的**插值函数**，点$x_0, x_1, \cdots, x_n$称为**插值节点**，包含插值节点的区间$[a,b]$称为插值区间，求插值产生$P(x)$的方法称为**插值法**。
+成立，就称 $P(x)$ 为 $f(x)$ 的**插值函数**，点 $x_0, x_1, \cdots, x_n$ 称为**插值节点**，包含插值节点的区间 $[a,b]$ 称为插值区间，求插值产生 $P(x)$ 的方法称为**插值法**。
 
 依据插值函数的不同，分为：
 
-**插值多项式**：$P(x)$是次数不超过n的代数多项式
+**插值多项式**： $P(x)$ 是次数不超过n的代数多项式
 
-**分段插值**：$P(x)$为分段多项式
+**分段插值**： $P(x)$ 为分段多项式
 
-**三角插值**：$P(x)$为三角多项式
+**三角插值**： $P(x)$ 为三角多项式
 
 ## 1.2 多项式插值
 
-**定理：**设在区间$[a,b]$上给定的$n+1$个点$a \leqslant x_0<x_1<\cdots<x_n \leqslant b$上的函数值$y_i = f(x_i)(i=0,1,\cdots,n)$，求次数不超过$n$次的多项式，使得
+**定理：**设在区间 $[a,b]$ 上给定的 $n+1$ 个点 $a \leqslant x_0<x_1<\cdots<x_n \leqslant b$ 上的函数值 $y_i = f(x_i)(i=0,1,\cdots,n)$ ，求次数不超过$n$次的多项式，使得
 $$
 P(x_i)=y_i, i=0,1,\cdots,n
 $$
@@ -41,63 +41,79 @@ $$
 
 #### 1.2.1.1 数学定义
 
-**定义：**若n次多项式$l_j(x)(j=0,1,\cdots,n)$在$n+1$个节点$ x_0<x_1<\cdots<x_n$上满足条件：
+**定义：**若n次多项式 $l_j(x)(j=0,1,\cdots,n)$ 在 $n+1$ 个节点 $x_0<x_1<\cdots<x_n$ 上满足条件：
+
 $$
 l_j\left(x_k\right)=\left\{\begin{array}{ll}
 1, & k=j, \\
 0, & k \neq j,
 \end{array} \quad j, k=0,1, \cdots, n,\right.
 $$
-就称这$n+1$个$n$次多项式$l_0(x), l_1(x), \cdots, l_n(x)$为节点$ x_0<x_1<\cdots<x_n$上的**n次插值基函数**。可以表示为：
+
+就称这 $n+1$ 个 $n$ 次多项式 $l_0(x),l_1(x),\cdots,l_n(x)$ 为节点 $x_0<x_1<\cdots<x_n$ 上的**n次插值基函数**。可以表示为：
+
 $$
 L_n(x)=\sum_{k=0}^n y_k l_k(x)
 $$
-其中，$l_k(x)$表示为：
+
+其中， $l_k(x)$ 表示为：
+
 $$
 l_k(x)=\frac{\left(x-x_0\right) \cdots\left(x-x_{k-1}\right)\left(x-x_{k+1}\right) \cdots\left(x-x_n\right)}{\left(x_k-x_0\right) \cdots\left(x_k-x_{k-1}\right)\left(x_k-x_{k+1}\right) \cdots\left(x_k-x_n\right)}, \quad k=0,1, \cdots, n .
 $$
+
 满足上式的多项式可称为**拉格朗日(Lagrange)插值多项式**。不失简便性，可写成如下形式：
+
 $$
 L_n(x)=\sum_{i=1}^n y_i\left(\prod_{j \neq i}^{1 \leq j \leq n} \frac{\left(x-x_j\right)}{\left(x_i-x_j\right)}\right)
 $$
+
 
 #### 1.2.1.2 算法实现
 
 注意到拉格朗日多项式的计算公式，包含若干个统一格式的乘积与求和。将会对应至少两个循环的嵌套。当需要插入较多数据点时，势必会大大减慢匀算速度。为此，我们希望能否通过矩阵运算以提高计算速度。
 
-我们注意到，对于$\prod_{j \neq i}^{1 \leq j \leq n} \frac{\left(x-x_j\right)}{\left(x_i-x_j\right)}$，其分子分母本质上是一致的。不同的是分母的被减数是给定的数据集，而分子的被减数是希望插值得到的数据。因此，分子分母实际对应一一个相同的函数$def(x)$，它们仅仅是自变量$x$存在差别。这一发现有助于提高代码的服用率。
+我们注意到，对于 $\prod_{j \neq i}^{1 \leq j \leq n} \frac{\left(x-x_j\right)}{\left(x_i-x_j\right)}$ ，其分子分母本质上是一致的。不同的是分母的被减数是给定的数据集，而分子的被减数是希望插值得到的数据。因此，分子分母实际对应一一个相同的函数 $def(x)$ ，它们仅仅是自变量 $x$ 存在差别。这一发现有助于提高代码的服用率。
 
-提升运算速度的途径之一是用向量方法代替循环。需要注意的是，这里利用了Numpy先天的矩阵计算加速功能，这一功能在不同语言不通设备上都有对应的高性能矩阵计算方法。对于数据点$\mathbf X=[x_0,x_1,\cdots,x_n]$生成$n$阶方阵$\mathbf {XS}$
+提升运算速度的途径之一是用向量方法代替循环。需要注意的是，这里利用了Numpy先天的矩阵计算加速功能，这一功能在不同语言不通设备上都有对应的高性能矩阵计算方法。对于数据点  $\mathbf X=[x_0,x_1,\cdots,x_n]$ 生成 $n$ 阶方阵 $\mathbf {XS}$
+
 $$
 \mathbf {XS}=\left(\begin{array}{ccccc}
 x_0,x_1,\cdots,x_n \\ x_0,x_1,\cdots,x_n \\ \vdots \\x_0,x_1,\cdots,x_n
 \end{array}\right)_{n\times n}
 $$
-为保证条件$j \neq i$，删去对角线元素，令$n\times n$矩阵化为$n\times (n-1)$
+
+为保证条件$j \neq i$，删去对角线元素，令 $n\times n$ 矩阵化为 $n\times (n-1)$
+
 $$
 \mathbf {XSS}=\left(\begin{array}{ccc}x_1,\cdots,x_n \\ x_0,\cdots,x_n \\ \vdots \\x_0,x_1,\cdots\end{array}\right)_{n\times n-1}
 $$
+
 这些构成了分子分母中共同的减数。
 
-函数$def(x)$能够接受两种不同类型的数据，**数与数组**。利用Numpy矩阵乘法的特性，无论是数还是数组，乘上n阶单位矩阵后，都能够获得全同的或行相同的矩阵。在本代码中，**数**对应预计的插值（**分子**部分），数组对应已知的数据点$\mathbf X$（**分母**部分）。
+函数 $def(x)$ 能够接受两种不同类型的数据，**数与数组**。利用Numpy矩阵乘法的特性，无论是数还是数组，乘上n阶单位矩阵后，都能够获得全同的或行相同的矩阵。在本代码中，**数**对应预计的插值（**分子**部分），数组对应已知的数据点 $\mathbf X$ （**分母**部分）。
 
-对于分母：输入数据点$\mathbf X$，并将其转置，为保证条件$j \neq i$，删去对角线元素，令$n\times n$矩阵化为$n\times (n-1)$
+对于分母：输入数据点 $\mathbf X$ ，并将其转置，为保证条件 $j \neq i$ ，删去对角线元素，令 $n\times n$ 矩阵化为 $n\times (n-1)$
+
 $$
 \mathbf {XP}=\left(\begin{array}{ccccc}
 x_0,x_0,\cdots,x_0 \\ x_1,x_1,\cdots,x_1 \\ \vdots \\x_n,x_n,\cdots,x_n
 \end{array}\right)_{n\times n} \rightarrow \mathbf {XPP}=\left(\begin{array}{ccc}x_0,\cdots,x_0 \\ x_1\cdots,x_1 \\ \vdots \\x_n,x_n,\cdots\end{array}\right)_{n\times n-1}
 $$
-分母则为$\mathbf {XPP}-\mathbf {XSS}$，并将按**行**将元素相乘，形成$1\times n$向量。
 
-对于分子：输入代求位置数x，并将其转置，为保证条件$j \neq i$，删去对角线元素，令$n\times n$矩阵化为$n\times (n-1)$：
+分母则为 $\mathbf {XPP}-\mathbf {XSS}$ ，并将按**行**将元素相乘，形成 $1\times n$ 向量。
+
+对于分子：输入代求位置数x，并将其转置，为保证条件 $j \neq i$ ，删去对角线元素，令 $n\times n$ 矩阵化为 $n\times (n-1)$ ：
+
 $$
 \mathbf {XQ}=\left(\begin{array}{ccccc}
 x,x,\cdots,x \\ x,x,\cdots,x \\ \vdots \\x,x,\cdots,x
 \end{array}\right)_{n\times n} \rightarrow \mathbf {XQQ}=\left(\begin{array}{ccc}x,\cdots,x \\ x,\cdots,x \\ \vdots \\x,x,\cdots\end{array}\right)_{n\times n-1}
 $$
-分母则为$\mathbf {XQQ}-\mathbf {XSS}$，并将按**行**将元素相乘，形成$1\times n$向量。
 
-分子分母相除，每行依次代表了$i=1,2,\cdots,n$下的商，即为$S$。对于数据集$\mathbf Y=[y_0,y_1,\cdots,y_n]$，进行$Y\cdot S$并将全部元素累加，得到对应位置数x的值。前述$def(x)$过程对应代码如下：
+分母则为 $\mathbf {XQQ}-\mathbf {XSS}$ ，并将按**行**将元素相乘，形成 $1\times n$ 向量。
+
+分子分母相除，每行依次代表了 $i=1,2,\cdots,n$ 下的商，即为 $S$ 。对于数据集 $\mathbf Y=[y_0,y_1,\cdots,y_n]$ ，进行 $Y\cdot S$ 并将全部元素累加，得到对应位置数x的值。前述 $def(x)$ 过程对应代码如下：
 
 ```python
     def donodo(self,x):
@@ -174,10 +190,12 @@ class Lagrange:
 #### 1.2.2.1 数学定义
 
 **均差定义：**一般地，称
+
 $$
 f\left[x_0, x_1, \cdots, x_k\right]=\frac{f\left[x_0, \cdots, x_{k-2}, x_k\right]-f\left[x_0, x_1, \cdots, x_{k-1}\right]}{x_k-x_{k-1}}
 $$
-为$f(x)$的**k阶均差**。一阶均差$f[x_0,x_k] = \frac{f(x_k)-f(x_0)}{x_k-x_0}$，二阶均差$\begin{aligned}f[x_0,x_1,x_k]=\frac{f\left[x_0, x_k\right]-f\left[x_0, x_1\right]}{x_k-x_1}\end{aligned}$。
+
+为 $f(x)$ 的**k阶均差**。一阶均差 $f[x_0,x_k] = \frac{f(x_k)-f(x_0)}{x_k-x_0}$ ，二阶均差 $\begin{aligned}f[x_0,x_1,x_k]=\frac{f\left[x_0, x_k\right]-f\left[x_0, x_1\right]}{x_k-x_1}\end{aligned}$ 。
 
 均差可通过直接列均差表计算：
 
@@ -190,13 +208,15 @@ $$
 |  $x_4$   | $f(x_4)$ | $f[x_3,x_4]$ | $f[x_2,x_3,x_4]$ | $f[x_1,x_2,x_3,x_4]$ | $f[x_0,x_1,x_2,x_3,x_4]$ |
 | $\cdots$ | $\cdots$ |   $\cdots$   |     $\cdots$     |       $\cdots$       |         $\cdots$         |
 
-**牛顿插值多项式定义：**对于基函数{${1,x-x_0,(x-x_0)\cdots(x-x_{n-1})}$}生成多项式$P_n{x}$表示为：
+**牛顿插值多项式定义：**对于基函数{ ${1,x-x_0,(x-x_0)\cdots(x-x_{n-1})}$ }生成多项式 $P_n{x}$ 表示为：
+
 $$
 P_n(x)=a_0+a_1\left(x-x_0\right)+\cdots+a_n\left(x-x_0\right) \cdots\left(x-x_{n-1}\right)
 $$
-其中，$a_k=f\left[x_0, x_1, \cdots, x_k\right], \quad k=0,1, \cdots, n$。则称$P_n(x)$为**牛顿插值多项式**。
 
-注意到，系数$a_k$即为上均差表每列的第一项。因此在使用牛顿插值多项式时，对于新添加的点毋需重新计算，只需在上均差表中更新即可。
+其中， $a_k=f\left[x_0, x_1, \cdots, x_k\right], \quad k=0,1, \cdots, n$ 。则称 $P_n(x)$ 为**牛顿插值多项式**。
+
+注意到，系数 $a_k$ 即为上均差表每列的第一项。因此在使用牛顿插值多项式时，对于新添加的点毋需重新计算，只需在上均差表中更新即可。
 
 #### 1.2.2.2 算法实现
 
@@ -219,7 +239,8 @@ $$
         return fx,list
 ```
 
-调用函数的返回结果list，可以得到上节所提到的均差表。对于得到的系数$a_k=f\left[x_0, x_1, \cdots, x_k\right]$，代入多项式表达式，
+调用函数的返回结果list，可以得到上节所提到的均差表。对于得到的系数 $a_k=f\left[x_0, x_1, \cdots, x_k\right]$ ，代入多项式表达式，
+
 $$
 P_n(x)=a_0+a_1\left(x-x_0\right)+\cdots+a_n\left(x-x_0\right) \cdots\left(x-x_{n-1}\right)
 $$
@@ -294,7 +315,7 @@ class Newton:
 
 ## 1.3 高次插值的病态现象
 
-龙格(Runge)指出，高次多项式不一定能收敛于$f(x)$，其病态性质会导致多项式在插值点间发生大幅度剧烈的变化，强烈的破坏数值的可信度。为此，可以考虑在电间使用分段低次插值。
+龙格(Runge)指出，高次多项式不一定能收敛于 $f(x)$ ，其病态性质会导致多项式在插值点间发生大幅度剧烈的变化，强烈的破坏数值的可信度。为此，可以考虑在电间使用分段低次插值。
 
 ## 1.4 分段低次插值
 
@@ -306,39 +327,48 @@ class Newton:
 
 #### 1.4.1.1 数学定义
 
-**定义：**若函数$S(x)\in C^2[a,b]$，且在每个小区间$[x_j,x_{j+1}]$上是三次多项式，其中$a=x_0<x_1<\cdots<x_n=b$是给定节点，则称$S(x)$是节点$x_0,x_1,\cdots,x_n$上的**三次样条函数**。若在节点$x_j$上给定函数值$y_i=f(x_i)(j=0,1,\cdots,n)$，并有
+**定义：**若函数 $S(x)\in C^2[a,b]$ ，且在每个小区间 $[x_j,x_{j+1}]$ 上是三次多项式，其中 $a=x_0<x_1<\cdots<x_n=b$ 是给定节点，则称 $S(x)$ 是节点  $x_0,x_1,\cdots,x_n$ 上的**三次样条函数**。若在节点 $x_j$ 上给定函数值 $y_i=f(x_i)(j=0,1,\cdots,n)$ ，并有
+
 $$
 S(x_j)=y_j,j=0,1,\cdots,n
 $$
-则称$S(x)$为**三次样条插值函数**。
 
-三次样条插值需要确定两个**边界条件**才可以确定$S(x)$，常见的边界条件有：
+则称 $S(x)$ 为**三次样条插值函数**。
 
-- 已知两端的一阶导数值，即$S^{\prime}\left(x_0\right)=f_0^{\prime}, \quad S^{\prime}\left(x_n\right)=f_n^{\prime}$
-- 已知两端的二阶导数值，即$S^{\prime \prime}\left(x_0\right)=f_0^{\prime \prime}, \quad S^{\prime \prime}\left(x_n\right)=f_n^{\prime \prime}$
-- $S(x)$是以$x_n-x_0$为周期的周期函数
+三次样条插值需要确定两个**边界条件**才可以确定 $S(x)$ ，常见的边界条件有：
 
-对于第二类边界条件，$S^{\prime \prime}\left(x_0\right)=f_0^{\prime \prime}, \quad S^{\prime \prime}\left(x_n\right)=f_n^{\prime \prime}$，当边界处二阶导数为0时，即$S^{\prime \prime}\left(x_0\right)= S^{\prime \prime}\left(x_n\right)=0$，称为**自然（由）边界条件**
+- 已知两端的一阶导数值，即 $S^{\prime}\left(x_0\right)=f_0^{\prime}, \quad S^{\prime}\left(x_n\right)=f_n^{\prime}$
+- 已知两端的二阶导数值，即 $S^{\prime \prime}\left(x_0\right)=f_0^{\prime \prime}, \quad S^{\prime \prime}\left(x_n\right)=f_n^{\prime \prime}$
+- $S(x)$ 是以 $x_n-x_0$ 为周期的周期函数
+
+对于第二类边界条件， $S^{\prime \prime}\left(x_0\right)=f_0^{\prime \prime}, \quad S^{\prime \prime}\left(x_n\right)=f_n^{\prime \prime}$ ，当边界处二阶导数为0时，即 $S^{\prime \prime}\left(x_0\right)= S^{\prime \prime}\left(x_n\right)=0$ ，称为**自然（由）边界条件**
 
 这里我们主要讨论**自然边界条件**。通过分段定义可以得到三次样条插值的表达式为：
+
 $$
 \begin{aligned}
 S(x)=& M_j \frac{\left(x_{j+1}-x\right)^3}{6 h_j}+M_{j+1} \frac{\left(x-x_j\right)^3}{6 h_j}+\left(y_j-\frac{M_j h_j^2}{6}\right) \frac{x_{j+1}-x}{h_j} \\
 &+\left(y_{j+1}-\frac{M_{j+1} h_j^2}{6}\right) \frac{x-x_j}{h_j}, \quad j=0,1, \cdots, n-1
 \end{aligned}
 $$
+
 由于一阶导数连续，即在分割点处左右导数相等可得：
+
 $$
 \mu_j M_{j-1}+2 M_j+\lambda_j M_{j+1}=d_j, \quad j=1,2, \cdots, n-1
 $$
+
 其中：
+
 $$
 \begin{aligned}
 &\mu_j=\frac{h_{j-1}}{h_{j-1}+h_j}, \quad \lambda_j=\frac{h_j}{h_{j-1}+h_j} \\
 &d_j=6 \frac{f\left[x_j, x_{j+1}\right]-f\left[x_{j-1}, x_j\right]}{h_{i-1}+h_i}=6 f\left[x_{j-1}, x_j, x_{j+1}\right] \quad j=1,2, \cdots, n-1,
 \end{aligned}
 $$
+
 可以写成三对角矩阵形式：
+
 $$
 \left(\begin{array}{ccccc}
 2 & \lambda_0 & & & \\
@@ -360,11 +390,12 @@ d_{n-1} \\
 d_n
 \end{array}\right)
 $$
-由于$S^{\prime \prime}\left(x_0\right)= S^{\prime \prime}\left(x_n\right)=0$，即$M_0=M_n=0,d_0=d_n=0$
+
+由于 $S^{\prime \prime}\left(x_0\right)= S^{\prime \prime}\left(x_n\right)=0$ ，即 $M_0=M_n=0,d_0=d_n=0$
 
 #### 1.4.1.2 算法实现
 
-依据递推公式$\mu_j M_{j-1}+2 M_j+\lambda_j M_{j+1}=d_j$的各项定义，由初始条件生成各系数：
+依据递推公式 $\mu_j M_{j-1}+2 M_j+\lambda_j M_{j+1}=d_j$ 的各项定义，由初始条件生成各系数：
 
 ```python
     #hn为x之间的间隔
@@ -547,25 +578,28 @@ class CubicSplineFree:
 
 # 2 曲线拟合
 
-对于函数类A中给定的函数$f(x)$，记作$f(x)\in A$，要求在另一类简单的便于计算的函数类B中求函数$p(x)\in B$，使$p(x)$与$f(x)$的误差在某种度量意义下最小。
+对于函数类A中给定的函数 $f(x)$ ，记作 $f(x)\in A$ ，要求在另一类简单的便于计算的函数类B中求函数 $p(x)\in B$ ，使 $p(x)$ 与 $f(x)$ 的误差在某种度量意义下最小。
 
 ## 2.1 曲线拟合的最小二乘法
 
 ### 2.1.1 数学定义
 
-对于在数据$\left\{\left(x_i, y_i\right), i=0,1, \cdots, m\right\}$上的拟合函数$S^*(x)$，设$\varphi=\operatorname{span}\left\{\varphi_0(x), \varphi_1(x), \cdots, \varphi_n(x)\right\}$为$C[a,b]$上线性无关函数族，找一函数$S^*(x)$，使误差平方和
+对于在数据 $\left\{\left(x_i, y_i\right), i=0,1, \cdots, m\right\}$ 上的拟合函数 $S^*(x)$ ，设 $\varphi=\operatorname{span}\left\{\varphi_0(x), \varphi_1(x), \cdots, \varphi_n(x)\right\}$ 为 $C[a,b]$ 上线性无关函数族，找一函数 $S^*(x)$ ，使误差平方和
+
 $$
 \|\boldsymbol{\delta}\|_2^2=\sum_{i=0}^m \delta_i^2=\sum_{i=0}^m\left[S^*\left(x_i\right)-y_i\right]^2=\min _{S(x) \in \varphi} \sum_{i=0}^m\left[S\left(x_i\right)-y_i\right]^2
 $$
+
 这里
+
 $$
 S(x)=a_0 \varphi_0(x)+a_1 \varphi_1(x)+\cdots+a_n \varphi_n(x) \quad(n<m)
 $$
-当$\varphi=\operatorname{span}\left\{\varphi_0(x), \varphi_1(x), \cdots, \varphi_n(x)\right\}$取$\varphi=\operatorname{span}\left\{1, x, \cdots, x^n\right\}$时，满足**Haar条件**，即一定能找到唯一一组$\left\{a_0,a_1,\cdots,a_n\right\}$使得$S(x)$存在最小值。
 
-要使得获得最小误差平方和，可以等价为取得全部元素加权平方和的最小值，也就是将系数
+当 $\varphi=\operatorname{span}\left\{\varphi_0(x), \varphi_1(x), \cdots, \varphi_n(x)\right\}$ 取 $\varphi=\operatorname{span}\left\{1, x, \cdots, x^n\right\}$ 时，满足**Haar条件**，即一定能找到唯一一组 $\left\{a_0,a_1,\cdots,a_n\right\}$ 使得 $S(x)$ 存在最小值。
 
-$\left\{a_0,a_1,\cdots,a_n\right\}$看作一组未知量。对其求偏导可以得到如下极小值存在的条件和定义：若记
+要使得获得最小误差平方和，可以等价为取得全部元素加权平方和的最小值，也就是将系数 $\left\{a_0,a_1,\cdots,a_n\right\}$ 看作一组未知量。对其求偏导可以得到如下极小值存在的条件和定义：若记
+
 $$
 \left(\varphi_j, \varphi_k\right)=\sum_{i=0}^m \omega\left(x_i\right) \varphi_j\left(x_i\right) \varphi_k\left(x_i\right)
 $$
@@ -575,10 +609,13 @@ $$
 $$
 
 满足：
+
 $$
 \sum_{j=0}^n\left(\varphi_k, \varphi_j\right) a_j=d_k, \quad k=0,1, \cdots, n
 $$
+
 即
+
 $$
 \left(\begin{array}{cccc}
 \left(\varphi_0, \varphi_0\right) & \left(\varphi_0, \varphi_1\right) & \cdots & \left(\varphi_0, \varphi_n\right) \\
@@ -591,6 +628,7 @@ $$
 ### 2.1.2 算法实现
 
 最小二乘法的算法实现即通过循环嵌套翻译数学表达式
+
 $$
 \left(\varphi_j, \varphi_k\right)=\sum_{i=0}^m \omega\left(x_i\right) \varphi_j\left(x_i\right) \varphi_k\left(x_i\right)
 $$
@@ -762,30 +800,31 @@ class FitSquares_polynomial:
 
 ### 3.1.1 数学原理
 
-**定理（矩阵的LU分解）**：设A为n阶举证，如果A的顺序主子式$D_i \neq 0(i=1,2,\cdots,n-1)$，则A可分解为一个单位下三角矩阵L和一个上三角矩阵U的乘积，且这种分解是唯一的。
+**定理（矩阵的LU分解）**：设A为n阶举证，如果A的顺序主子式 $D_i \neq 0(i=1,2,\cdots,n-1)$ ，则A可分解为一个单位下三角矩阵L和一个上三角矩阵U的乘积，且这种分解是唯一的。
 
-采用LU分解，对于方程$\mathbf A\mathbf x=\mathbf b$，由于$\mathbf A = \mathbf L \mathbf U$，则等价为求解两个三角形方程组$\mathbf L\mathbf y = \mathbf b$,$\mathbf U \mathbf x = \mathbf y$
+采用LU分解，对于方程 $\mathbf A\mathbf x=\mathbf b$ ，由于 $\mathbf A = \mathbf L \mathbf U$ ，则等价为求解两个三角形方程组 $\mathbf L\mathbf y = \mathbf b$ , $\mathbf U \mathbf x = \mathbf y$
 
 **杜利特尔（Doolittle）分解：**若A非奇异且LU分解存在，即A能够被分解为：
+
 $$
 \boldsymbol{A}=\left(\begin{array}{cccc}1 & & & \\ l_{21} & 1 & & \\ \vdots & \vdots & \ddots & \\ l_{n 1} & l_{n 2} & \cdots & 1\end{array}\right)\left(\begin{array}{cccc}u_{11} & u_{12} & \cdots & u_{1 n} \\ & u_{22} & \cdots & u_{2 n} \\ & & \ddots & \vdots \\ & & & u_{n n}\end{array}\right)
 $$
+
 Doolittle分解步骤为:
 
-1. $u_{1 i}=a_{1 i}(i=1,2, \cdots, n), l_{i 1}=a_{i 1} / u_{11}, i=2,3, \cdots, n$
+1.  $u_{1 i}=a_{1 i}(i=1,2, \cdots, n), l_{i 1}=a_{i 1} / u_{11}, i=2,3, \cdots, n$
 
-   计算**U**的第r行，**L**的第r列$(r=2,3,\cdots,n)$
+   计算**U**的第r行，**L**的第r列 $(r=2,3,\cdots,n)$
 
-2. $u_{r i}=a_{r i}-\sum_{k=1}^{r-1} l_{r k} u_{k i}, i=r, r+1, \cdots, n$
+2.  $u_{r i}=a_{r i}-\sum_{k=1}^{r-1} l_{r k} u_{k i}, i=r, r+1, \cdots, n$
 
-3. $l_{i r}=\left(a_{i r}-\sum_{i=1}^{r-1} l_{i k} u_{k r}\right) / u_{r r}, i=r+1, \cdots, n$, 且 $r \neq n$
+3.  $l_{i r}=\left(a_{i r}-\sum_{i=1}^{r-1} l_{i k} u_{k r}\right) / u_{r r}, i=r+1, \cdots, n$ , 且 $r \neq n$
 
-   求解$\mathbf L\mathbf y = \mathbf b$,$\mathbf U \mathbf x = \mathbf y$
+   求解 $\mathbf L\mathbf y = \mathbf b$,$\mathbf U \mathbf x = \mathbf y$
 
-4. $\left\{\begin{array}{l}y_1=b_1, \\ y_i=b_i-\sum_{k=1}^{i-1} l_{i k} y_k, i=2,3, \cdots, n\end{array}\right.$
+4.  $\left\{\begin{array}{l}y_1=b_1, \\ y_i=b_i-\sum_{k=1}^{i-1} l_{i k} y_k, i=2,3, \cdots, n\end{array}\right.$
 
-5. 
-   $\left\{\begin{array}{l}x_n=y_n / u_{n n} \\ x_i=\left(y_i-\sum_{k=i+1}^n u_{i k} x_k\right) / u_{i i}, i=n-1, n-2, \cdots, 1\end{array}\right.$
+5.  $\left\{\begin{array}{l}x_n=y_n / u_{n n} \\ x_i=\left(y_i-\sum_{k=i+1}^n u_{i k} x_k\right) / u_{i i}, i=n-1, n-2, \cdots, 1\end{array}\right.$
 
 ### 3.1.2 算法实现
 
@@ -842,6 +881,7 @@ def MartrixSolver(A,d):
 ### 3.2.1 数学原理
 
 在传热学数值计算那篇文章中，已经提过了这一概念。三对角线性方程组形如下所示：
+
 $$
 \left(\begin{array}{ccccc}
 b_1 & c_1 & & & \\
@@ -863,7 +903,9 @@ f_{n-1} \\
 f_n
 \end{array}\right)
 $$
-且满足：$\left|b_1\right|>\left|c_1\right|>0$；$\left|b_i\right| \geqslant\left|a_i\right|+\left|c_i\right|, a_i, c_i \neq 0, i=2,3, \cdots, n-1$;$\left|b_n\right|>\left|a_n\right|>0$。。三对角线性方程组系数行列式可被LU分解为：
+
+且满足： $\left|b_1\right|>\left|c_1\right|>0$ ； $\left|b_i\right| \geqslant\left|a_i\right|+\left|c_i\right|, a_i, c_i \neq 0, i=2,3, \cdots, n-1$ ; $\left|b_n\right|>\left|a_n\right|>0$ 。三对角线性方程组系数行列式可被LU分解为：
+
 $$
 \left(\begin{array}{cccc}
 \alpha_1 & & & \\
@@ -877,21 +919,22 @@ r_2 & \alpha_2 & & \\
 & & & 1
 \end{array}\right)
 $$
+
 将LU分解的方法带入到其中，可以得到**追赶法公式**：
 
-1. 计算$\left\{\beta_i\right\}$的递推公式：
+1. 计算 $\left\{\beta_i\right\}$ 的递推公式：
 
    $\beta_1 = c_1/b_1$
 
    $\beta_i = c_i/(b_i-a_i\beta_{i-1}),i=2,3,\cdots,n-1$
 
-2. 求解$\mathbf L\mathbf y = \mathbf f$
+2. 求解 $\mathbf L\mathbf y = \mathbf f$
 
    $y_1 = f_1/b_1$
 
    $y_i = (f_i-a_iy_{i-1})/(b_i-a_i\beta_{i-1}),i=2,3,\cdots,n$
 
-3. 求解$\mathbf U \mathbf x = \mathbf y$
+3. 求解 $\mathbf U \mathbf x = \mathbf y$
 
    $x_n=y_n$
 
@@ -1052,11 +1095,11 @@ print(po0_C,po1_C,po2_C,eff0_C,eff1_C)
 
 <img src="/Users/dmcxe/Downloads/image-20221011203000749.png" alt="image-20221011203000749" style="zoom:50%;" />
 
-（1）利用对数最小二乘方程$lnR=lnb+alnw$拟合，确定参数a,b。
+（1）利用对数最小二乘方程 $lnR=lnb+alnw$ 拟合，确定参数a,b。
 
 （2）计算（1）中的平方误差。
 
-（3）修改（1）中的对数最小二乘方程$lnR=lnb+alnw+c(lnw)^2$，确定参数a,b,c  。
+（3）修改（1）中的对数最小二乘方程 $lnR=lnb+alnw+c(lnw)^2$ ，确定参数a,b,c  。
 
 （4）计算（3）中的平方误差。
 
@@ -1098,14 +1141,14 @@ print(b3,an3[1:],S3.delta())
 
 <img src="/Users/dmcxe/Downloads/二次.png" alt="二次" style="zoom:50%;" />
 
-$b=1.3534,a=0.6103$
+$ b=1.3534,a=0.6103 $
 
-**第二问：**$lnR=lnb+alnw$对应的误差为：$2.6305502895585346e-06$
+**第二问：** $lnR=lnb+alnw$ 对应的误差为： $2.6305502895585346e-06$
 
-**第三问：**$lnR=lnb+alnw+c(lnw)^2$对应拟合曲线为：
+**第三问：** $lnR=lnb+alnw+c(lnw)^2$ 对应拟合曲线为：
 
 <img src="/Users/dmcxe/Downloads/三次.png" alt="三次" style="zoom:50%;" />
 
 $b=1.2786,a=0.6275,c=0.0160$
 
-**第四问：**$lnR=lnb+alnw+c(lnw)^2$对应的误差为：$1.7143596831005267e-05$
+**第四问：** $lnR=lnb+alnw+c(lnw)^2$ 对应的误差为： $1.7143596831005267e-05$
