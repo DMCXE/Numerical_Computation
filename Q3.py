@@ -29,13 +29,14 @@ def FG(x):
     return A.res()-0.45
 
 "第一问：Romberg积分值"
-
 visualize(FR,0,10,50)
+print(Romberg(f,0,5,ess).Table())
+
 "第二问：Gauss-legendre格式积分值"
 visualize(FG,0,10,50)
 
 "第三问:牛顿迭代法"
-x0 = 1
+x0 = 0.5
 
 NR = NewtonIter(FR,f,x0,0.0001)
 xR = NR.Iter()
