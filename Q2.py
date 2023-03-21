@@ -13,10 +13,17 @@ R = np.array([0.154,0.181,0.234,0.260,0.296,0.299,0.334,
 R_ln = np.log(R)
 w_ln = np.log(w)
 arr = np.c_[w_ln,R_ln]
-S = FSs(arr,6)
+S2 = FSs(arr,2)
+S3 = FSs(arr,3)
 mi = np.min(w_ln)
 ma = np.max(w_ln)
-S.visualize(mi-0.5,ma+0.5,1000,False)
-an = S.an
-print(an)
-print(S.delta())
+S2.visualize(mi-0.5,ma+0.5,1000,False)
+S3.visualize(mi-0.5,ma+0.5,1000,False)
+an2 = S2.an
+an3 = S3.an
+b2 = np.e**(an2[0])
+b3 = np.e**(an3[0])
+print(b2,an2[1:],S2.delta())
+print(b3,an3[1:],S3.delta())
+
+

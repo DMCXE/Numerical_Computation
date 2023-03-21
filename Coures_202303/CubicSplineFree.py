@@ -4,7 +4,7 @@ class CubicSplineFree:
     def __init__(self,arr1):
         self.arr1 = arr1
         self.arr1_x = arr1[:,0]
-        self.arr1_y = arr1[:,1]
+        self.arr1_y = arr1[:,1]*10
         self.lenth = len(arr1)
     #hn为x之间的间隔
     def hn(self):
@@ -95,7 +95,7 @@ class CubicSplineFree:
             + M[j+1]*((x-self.arr1_x[j])**3)/(6*h[j]) \
             + (self.arr1_y[j]-(M[j]*(h[j]**2))/6)*(self.arr1_x[j+1]-x)/h[j] \
             + (self.arr1_y[j+1]-M[j+1]*h[j]**2/6)*(x-self.arr1_x[j])/h[j]
-        return S
+        return S/10
 
     def visualize(self,start,end,step,text):
         x = np.linspace(start,end,step)
@@ -104,10 +104,10 @@ class CubicSplineFree:
             y = np.append(y,self.num(i))
         y = y[1:]
         plt.figure()
-        plt.scatter(self.arr1_x, self.arr1_y, c='red')
+        plt.scatter(self.arr1_x, self.arr1_y/10, c='red')
         if text is True:
             for j in range(0,self.lenth):
-                plt.text(self.arr1_x[j],self.arr1_y[j],(self.arr1_x[j],self.arr1_y[j]))
+                plt.text(self.arr1_x[j],self.arr1_y[j]/10,(self.arr1_x[j],self.arr1_y[j]/10))
         plt.plot(x,y)
         plt.show()
 
@@ -118,12 +118,23 @@ class CubicSplineFree:
 arr3 = np.array([[1960,180671],[1970,205052],[1980,227225],[1990,249623],[2000,282162],[2010,309327],[2020,329484]])
 arr2 = np.array([[27.7,4.1],[28,4.3],[29.,4.1],[30,3.]])
 arr1 = np.array([[1, 2], [3.9, 400], [4, -600], [4.1, 2], [9, 100]])
-
+arr4 = np.array([[-5.,0.03846154],[-3., 0.1],[-1.,0.5],[ 1.,0.5 ],[ 3., 0.1],[ 5. ,0.03846154]])
+def OriginF(x):
+    return 1/(1+x**2)
+"原函数的导数"
+def DOriginF(x):
+    return -2*x/((1+x**2)**2)
+X = np.linspace(-5,5,6)
+Y = OriginF(X)
+AXY = np.c_[X,Y]
+print(AXY)
+#AXY[:,1]*=10
 N = 8
 arr_y = 100*np.random.random(N)
 arr_x = np.linspace(0,100,N)
 arr = np.c_[arr_x,arr_y]
 a= CubicSplineFree(arr1)
 a.visualize(0,10,10000,False)
+#a.visualize(-5,5,10000,False)
 print(a.Mn())
 '''

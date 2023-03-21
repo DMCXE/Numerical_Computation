@@ -11,13 +11,18 @@ class FitSquares_polynomial:
         self.an = self.phiprod()[0]
 
     def phiprod(self):
+        #确定总长度
         n = self.n
+        #初始化G,d向量
         G = np.array([])
         d = np.array([])
+        #计算并生成G,d向量
         for i in range(0,n):
             d = np.append(d,np.sum((self.arr1_y)*(self.arr1_x**i)))
             for j in range(0,n):
+                #这里的G向量是有n个元素的行向量
                 G = np.append(G,np.sum((self.arr1_x**i)*(self.arr1_x**j)))
+        #通过.reshape方法将G向量转为n阶方阵
         G = G.reshape(n,n)
         #通过np求逆求解，待更新轮子解法
         #an = np.dot(np.linalg.inv(G), d)
@@ -46,7 +51,6 @@ class FitSquares_polynomial:
         plt.show()
 
     def delta(self):
-        an = self.an
         de = np.zeros(self.lenth)
         for i in range(0,self.lenth):
             de[i] = (self.num(self.arr1_x[i])-self.arr1_y[i])**2
