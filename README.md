@@ -979,6 +979,174 @@ $$
             return e
 ```
 
+#4 数值积分
+## Romberg法
+
+通过复合求积方法的思想，当计算精度不足时，将积分区间 $[a,b]$ 逐级二分，并将二分前后的两个积分值联合考察，可以得到每次二分后的积分递推公式为：
+
+$\begin{aligned}T_{2n}=\frac12T_n+\frac{b-a}{2^n}\sum_{k=0}^{n-1}f(x_{k+\frac12})\end{aligned}$
+
+逐次二分可以提高求积公式的精度，可以表示为
+
+$\begin{aligned}T(h)=I+\frac{b-a}{12}h^2f''(\eta),\lim _{h \rightarrow 0} T(h)=T(0)=I\end{aligned}$
+
+其余项可以展开为级数形式，有定理描述为
+
+$T(h)=I+\alpha_1h^2+\alpha_2h^4+\cdots+\alpha_lh^{2l}+\cdots$
+
+其中，系数$\alpha_l$与h无关
+
+对其进行外推，将h数次减半，可得到Romberg求积算法：
+
+$T_m^{(k)}=\frac{4^m}{4^m-1}T_{m-1}^{(k+1)}-\frac{1}{4^m-1}T_{m-1}^{(k)}$
+
+计算过程为：
+
+1. 取$k = 0,h=b-a$.求
+
+   $T_0^{0}=\frac{b-a}{2}[f(a)+f(b)]$
+
+2. 求梯形值$T_0(\frac{b-a}{2^k})$,依据递推公式
+
+3. 依据Romberg法求加速值
+
+4. 判断精度，否则k+1
+
+衍生的T表为：
+
+![image-20221104104636596](/Users/dmcxe/Library/Application Support/typora-user-images/image-20221104104636596.png)
+
+## GaussLegendre法
+
+Gauss求积公式的一半原理为
+
+$\begin{aligned}\int_a^b f(x) \mathrm{d} x \approx \sum_{k=0}^n A_k f\left(x_k\right)\end{aligned}$
+
+即通过求解2n+2个参数的待定系数方程得到插值求积公式。当 $[a,b]$ 为 $[-1,1]$ 时，注意到勒让德多项式在此区间上是正交的。因此可以将勒让德多项式的零点作为高斯求积公式的高斯点。称为 $Gauss-Legendre$ 求积公式。
+
+下表给出了 $Gauss-Legendre$ 求积公式的n+1点求积公式系数。
+
+
+对于三点高斯勒让德求积公式（n=2），为
+
+$\begin{aligned}\int_{-1}^1 f(x) \mathrm{d} x \approx \frac{5}{9} f\left(-\frac{\sqrt{15}}{5}\right)+\frac{8}{9} f(0)+\frac{5}{9} f\left(\frac{\sqrt{15}}{5}\right)\end{aligned}$
+
+若被积函数积分区间处于 $[a,b]$ ，则通过变换
+
+$x=\frac{b-a}{2} t+\frac{a+b}{2}$
+
+改写为
+
+$\begin{aligned}\int_a^b f(x) \mathrm{d} x=\frac{b-a}{2} \int_{-1}^1 f\left(\frac{b-a}{2} t+\frac{a+b}{2}\right) \mathrm{d} t\end{aligned}$
+
+#5 非线性方程求解
+## 牛顿迭代法
+
+牛顿迭代法是一种常见的线性/非线性方程求解法，比如说卡西欧计算器内置的求解功能即运用的是牛顿求解法。对于方程 $f(x)=0$ ，假设存在近似根 $x_k$ ，且 $f^{\prime}\left(x_k\right) \neq 0$ , 利用切线方法在此点处展开，有
+
+$f(x) \approx f\left(x_k\right)+f^{\prime}\left(x_k\right)\left(x-x_k\right)$ 
+
+即
+
+$f\left(x_k\right)+f^{\prime}\left(x_k\right)\left(x-x_k\right)  = 0$
+
+对于此线性方程，记其根为 $x_{k+1}$, 计算为
+
+$x_{k+1}=x_k-\frac{f\left(x_k\right)}{f^{\prime}\left(x_k\right)}, \quad k=0,1, \cdots$
+
+根据上述思路迭代即可。
+
+```python
+class NewtonIter:
+    def __init__(self, F, f, x0,ess):
+        self.F = F
+        self.f = f
+        self.x0 = x0
+        self.ess = ess
+
+    def Iter(self):
+        delt = 1
+        x = self.x0
+        x0 = x
+        count = 0
+        MaxIter = 10000
+        while delt >= self.ess :
+            x = x - self.F(x)/self.f(x)
+            if abs(x)<1:
+                delt = abs(x0-x)
+            else:
+                delt = abs((x0-x)/x)
+            x0 = x
+            count += 1
+            if count >= MaxIter:
+                x = "超过最大迭代上限10000"
+                break
+        return x
+```
+
+#6 ODE
+常用的ODE求解方法为龙格-库塔方法。即增加欧拉法中的节点数提高精度。RK方法可以用公式表示为：
+
+$\begin{aligned}
+&y_{n+1}=y_n+h \varphi\left(x_n, y_n, h\right),
+\end{aligned}$
+
+其中
+
+$ \varphi\left(x_n, y_n, h\right)=\sum_{i=1}^r c_i K_i$
+
+$K_1=f\left(x_n, y_n\right)$
+
+$K_i=f\left(x_n+\lambda_i h, y_n+h \sum_{j=1}^{i-1} \mu_{i j} K_j\right), \quad i=2, \cdots, r$
+
+当对r取不同的取值，则对应了不同的方法。四阶RK4方法具备较高的精度，常用于数值计算中。通过数学计算，可以得到RK4的一半表达式为：
+
+$\left\{\begin{array}{l}
+y_{n+1}=y_n+\frac{h}{6}\left(K_1+2 K_2+2 K_3+K_4\right), \\
+K_1=f\left(x_n, y_n\right), \\
+K_2=f\left(x_n+\frac{h}{2}, y_n+\frac{h}{2} K_1\right), \\
+K_3=f\left(x_n+\frac{h}{2}, y_n+\frac{h}{2} K_2\right), \\
+K_4=f\left(x_n+h, y_n+h K_3\right) .
+\end{array}\right.$
+
+将其可简单翻译为编程语言
+
+```python
+class RK4:
+    def __init__(self, F,min,max,totstep,begin):
+        self.F = F
+        self.min = min
+        self.max = max
+        self.step = (self.max-self.min)/totstep
+        self.begin = begin
+        self.totstep = totstep
+
+    def slover(self):
+        f = self.F
+        x = 0
+        y = self.begin
+        yn = np.zeros(1)
+        yn[0] = y
+        step = self.step
+        flag = 1
+        for i in range(1,self.totstep+1):
+            K1 = f(x,y)
+            K2 = f(x+0.5*step,y+0.5*step*K1)
+            K3 = f(x+0.5*step,y+0.5*step*K2)
+            K4 = f(x+step,y+step*K3)
+            y = y + (step/6)*(K1+2*K2+2*K3+K4)
+            yn = np.append(yn,y)
+            flag = flag + 1
+            x = i * step
+        return yn
+```
+
+
+
+
+
+
+``
 
 
 # 案例
@@ -1152,3 +1320,113 @@ $ b=1.3534,a=0.6103 $
 $b=1.2786,a=0.6275,c=0.0160$
 
 **第四问：** $lnR=lnb+alnw+c(lnw)^2$ 对应的误差为： $1.7143596831005267e-05$
+
+# Q3 
+
+通过Newton迭代求解 $f(x)=\int_0^x \frac{1}{\sqrt{2 \pi}} e^{-\frac{t^2}{2}} d t-0.45$
+
+(1)通过Romberg求积计算迭代所需的各项积分值
+
+(2)通过Gauss-le gendre三点公式计算迭代所需的各项积分值
+
+(3)取初值 $x_0=0.5$ , 选取来自前两问的各节点积分值，用Newton迭代法求根
+
+
+
+针对前两问，通过以下方式即可
+
+```python
+from Romberg import Romberg
+from GaussLegendre import GaussLegendre3
+from NewtonIter import NewtonIter
+ess = 1e-4
+
+def f(x):
+    return (1/np.sqrt(2*np.pi))*np.exp(-0.5*(x**2))
+
+"Romberg格式积分值"
+def FR(x):
+    A = Romberg(f,0,x,ess)
+    return A.res()-0.45
+
+"Gauss-legendre格式积分值"
+def FG(x):
+    A = GaussLegendre3(f,0,x)
+    return A.res()-0.45
+
+"第一问：Romberg积分值"
+visualize(FR,0,10,50)
+print(Romberg(f,0,5,ess).Table())
+
+"第二问：Gauss-legendre格式积分值"
+visualize(FG,0,10,50)
+```
+
+对于Romberg积分值
+
+![Romeg](/Users/dmcxe/Downloads/Romeg.png)在x=5时形成的T表为(经过了转置)
+
+[[0.99735942 0.54250046 0.50000233 0.4999995  0.49999965 0.4999997 ]
+ [0.39088081 0.48583629 0.49999856 0.49999971 0.49999971 0.        ]
+ [0.49216665 0.50094271 0.49999978 0.49999971 0.         0.        ]
+ [0.50108201 0.49998482 0.49999971 0.         0.         0.        ]
+ [0.49998051 0.49999977 0.         0.         0.         0.        ]
+ [0.49999979 0.         0.         0.         0.         0.        ]]
+
+对于三点Gauss-lengendre的积分值
+
+![GL](/Users/dmcxe/Downloads/GL.png)
+
+不难发现当x较大时其精度相较于Romberg较差。这是由于插值精度决定的。
+
+通过对以上两个积分方法带入到牛顿迭代中，
+
+Romberg方法：1.6448571505297174
+
+Gauss-lengendre方法：1.6451738240002383
+
+# Q4
+在题目条件下求解方程：
+
+$\frac{d x}{d t}=k\left(n_1-\frac{x}{2}\right)^2\left(n_2-\frac{x}{2}\right)^2\left(n_3-\frac{3 x}{4}\right)^3$
+
+其中：
+
+$k=6.22 \times 10^{-19}, n_1=n_2=2 \times 10^3, n_3=3 \times 10^3$
+
+计算在0.2s后形成多少单位的KOH
+
+
+
+计算代码为：
+
+```python
+'''KOH生成速率的ODE'''
+def F(x,y):
+    k = 6.22*1e-19
+    n1 = 2*1e3
+    n2 = 2*1e3
+    n3 = 3*1e3
+    return k*((n1 - 0.5*y)**2)*((n2 - 0.5*y)**2)*((n3 - 0.75*y)**3)
+"初值和边界条件"
+time_start = 0
+time_end = 0.2
+totstep = 100
+boundary0 = 0
+"实例化"
+A = RK4(F,time_start,time_end,totstep,boundary0)
+koh = A.slover()
+"0.2s时产率为"
+print(koh[-1])
+"趋势可视化"
+plt.figure()
+xx = np.linspace(time_start,time_end,totstep+1)
+plt.plot(xx, koh)
+plt.show()
+
+```
+
+反应趋势与数据为
+
+
+
