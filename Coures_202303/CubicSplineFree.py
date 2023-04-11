@@ -97,6 +97,17 @@ class CubicSplineFree:
             + (self.arr1_y[j+1]-M[j+1]*h[j]**2/6)*(x-self.arr1_x[j])/h[j]
         return S/10
 
+    def dnum(self,x):
+        j = self.zone(x)  # zone函数的作用为确定输入量x处于的区间
+        M = self.Mn()
+        h = self.hn()
+        S = -3*M[j] * ((self.arr1_x[j + 1] - x) ** 2) / (6 * h[j]) \
+            + 3* M[j + 1] * ((x - self.arr1_x[j]) ** 2) / (6 * h[j]) \
+            + (self.arr1_y[j] - (M[j] * (h[j] ** 2)) / 6) * (-1) / h[j] \
+            + (self.arr1_y[j + 1] - M[j + 1] * h[j] ** 2 / 6) * (1) / h[j]
+        return S / 10
+
+
     def visualize(self,start,end,step,text):
         x = np.linspace(start,end,step)
         y = np.zeros(1)
